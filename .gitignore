@@ -1,6 +1,9 @@
 venv*/
 data/
 *.zip
+checkpoints/
+runs/
+log/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
