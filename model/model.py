@@ -304,11 +304,11 @@ def train(
         )
 
         if scheduler_gen is not None:
-            scheduler_gen.step()
+            scheduler_gen.step(epoch=epoch)
             writer.add_scalar("LR/Gen", scheduler_gen.get_last_lr()[0], epoch)
 
         if scheduler_disc is not None:
-            scheduler_disc.step()
+            scheduler_disc.step(epoch=epoch)
             writer.add_scalar("LR/Disc", scheduler_disc.get_last_lr()[0], epoch)
 
         if (epoch + 1) % save_every == 0:
