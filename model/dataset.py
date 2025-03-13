@@ -5,7 +5,31 @@ import torch
 from PIL import Image
 from torch.utils.data import DataLoader, Dataset, Subset
 
-from model.config import RANDOM_SEED, BATCH_SIZE, NUM_WORKERS
+from model.config import BATCH_SIZE, NUM_WORKERS, RANDOM_SEED
+
+
+class SingleDomainImageDataset(Dataset):
+
+    def __init__(self, images_paths: str, transformations: Optional[callable] = None):
+        super().__init__()
+        self.root = images_paths
+        self.transform = transformations
+
+        self.images = os.listdir(images_paths)
+        self.length = len(self.images)
+
+    def __len__(self):
+        return self.length
+
+    def __getitem__(self, index):
+        image = self.images[index]
+        image = Image.open(os.path.join(self.root, image))
+        image = image.convert("RGB")
+
+        if self.transform:
+            image = self.transform(image)
+
+        return image
 
 
 class ImageDataset(Dataset):
@@ -15,6 +39,7 @@ class ImageDataset(Dataset):
         y_images_paths: str,
         transformations: Optional[callable] = None,
     ):
+        super().__init__()
         self.root_x = x_images_paths
         self.root_y = y_images_paths
 
@@ -28,7 +53,7 @@ class ImageDataset(Dataset):
 
         # amount of images from both domains can be different
         # we set dataset length to the maximum amount of images
-        self.length_dataset = max(self.x_length, self.y_length)
+        self.length_dataset = min(self.x_length, self.y_length)
 
     def __getitem__(self, idx):
         # we should use modulo to avoid index out of range for

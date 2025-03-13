@@ -146,6 +146,3 @@ class Generator(nn.Module):
             x = layer(x)
         x = self.final(x)
         return torch.tanh(x)
-
-
-# TODO change relu on leaky_relu?

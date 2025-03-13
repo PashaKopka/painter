@@ -8,6 +8,7 @@ import torchvision.utils as vutils
 from torch.profiler import ProfilerActivity, profile, record_function
 from tqdm import tqdm
 
+from model.config import SAVE_CHECKPOINTS
 from model.discriminator import Discriminator
 from model.generator import Generator
 from model.image_buffer import ImageBuffer
@@ -261,10 +262,6 @@ def train(
 
             prof.step()
 
-            # clean up memory
-            # del real_X, real_Y, losses
-            # torch.cuda.empty_cache()
-
         # Show images in tensorboard every 5 epochs
         if epoch % 5 == 0:
             _show_images_in_tensorboard(
@@ -311,7 +308,7 @@ def train(
             scheduler_disc.step(epoch=epoch)
             writer.add_scalar("LR/Disc", scheduler_disc.get_last_lr()[0], epoch)
 
-        if (epoch + 1) % save_every == 0:
+        if (epoch + 1) % save_every == 0 and SAVE_CHECKPOINTS:
             model.save_checkpoint(epoch, checkpoint_dir)
 
     prof.stop()
