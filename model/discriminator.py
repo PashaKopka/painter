@@ -40,8 +40,10 @@ class Discriminator(nn.Module):
         self,
         in_channels=3,
         num_of_blocks=3,
+        noise_std=0.05,
     ):
         super().__init__()
+        self.noise_std = noise_std
 
         num_features = 64
 
@@ -77,6 +79,10 @@ class Discriminator(nn.Module):
         )
 
     def forward(self, x):
+        if self.training:
+            noise = torch.randn_like(x) * self.noise_std
+            x = x + noise
+
         x = self.initial(x)
         for layer in self.layers:
             x = layer(x)
